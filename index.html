@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Hitung Pinjaman Bijak</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .calculator-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .value-display {
+            font-weight: bold;
+            color: #3498db;
+            float: right;
+        }
+        .result-section {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .result-row.total {
+            border-top: 2px solid #cbd5e0;
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #e53e3e;
+        }
+        .edu-note {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 10px;
+            font-size: 13px;
+            color: #718096;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>📊 Simulator Hitung Pinjaman</h2>
+    <p style="font-size: 13px; color: #718096;">Edukasi Biaya Nyata & Bunga Tersembunyi</p>
+
+    <!-- Input Nominal Pinjaman -->
+    <div class="input-group">
+        <label>Nominal Pinjaman <span class="value-display" id="loanDisplay">Rp3.000.000</span></label>
+        <input type="range" id="loanAmount" min="1000000" max="20000000" step="500000" value="3000000">
+    </div>
+
+    <!-- Input Bunga per Bulan -->
+    <div class="input-group">
+        <label>Bunga Flat per Bulan <span class="value-display" id="interestDisplay">1.5%</span></label>
+        <input type="range" id="interestRate" min="0.5" max="5" step="0.1" value="1.5">
+    </div>
+
+    <!-- Input Tenor/Jangka Waktu -->
+    <div class="input-group">
+        <label>Jangka Waktu (Tenor) <span class="value-display" id="monthsDisplay">4 Bulan</span></label>
+        <input type="range" id="months" min="1" max="12" step="1" value="4">
+    </div>
+
+    <!-- Input Biaya Admin (Tetap) -->
+    <div class="input-group">
+        <label>Biaya Admin Tetap <span class="value-display" id="adminDisplay">Rp25.000</span></label>
+        <input type="range" id="adminFee" min="0" max="100000" step="5000" value="25000">
+    </div>
+
+    <!-- Input Biaya Provisi (%) -->
+    <div class="input-group">
+        <label>Biaya Provisi Awalan <span class="value-display" id="provisionDisplay">2%</span></label>
+        <input type="range" id="provisionRate" min="0" max="5" step="0.5" value="2">
+    </div>
+
+    <!-- Bagian Hasil Kalkulasi -->
+    <div class="result-section">
+        <div class="result-row">
+            <span>➡️ Total Bunga Pokok:</span>
+            <span id="resTotalInterest" style="font-weight: 600;">Rp180.000</span>
+        </div>
+        <div class="result-row">
+            <span>➡️ Total Biaya Tambahan (Admin + Provisi):</span>
+            <span id="resTotalFees" style="font-weight: 600;">Rp85.000</span>
+        </div>
+        <div class="result-row total">
+            <span>⚠️ Total Biaya di Luar Pokok:</span>
+            <span id="resTotalCost">Rp265.000</span>
+        </div>
+        <div class="result-row" style="margin-top: 5px; font-size: 13px; color: #4a5568;">
+            <span>💡 Dana Bersih yang Diterima Nasabah:</span>
+            <span id="resNetReceived" style="font-weight: 600; color: #2f855a;">Rp2.915.000</span>
+        </div>
+    </div>
+
+    <div class="edu-note">
+        💡 **Pesan Edukasi:** Biaya provisi sering kali langsung memotong dana pinjaman di awal. Pastikan Anda menghitung dana bersih yang benar-benar masuk ke rekening!
+    </div>
+</div>
+
+<script>
+    // Mengambil elemen UI
+    const loanInput = document.getElementById('loanAmount');
+    const interestInput = document.getElementById('interestRate');
+    const monthsInput = document.getElementById('months');
+    const adminInput = document.getElementById('adminFee');
+    const provisionInput = document.getElementById('provisionRate');
+
+    const loanDisplay = document.getElementById('loanDisplay');
+    const interestDisplay = document.getElementById('interestDisplay');
+    const monthsDisplay = document.getElementById('monthsDisplay');
+    const adminDisplay = document.getElementById('adminDisplay');
+    const provisionDisplay = document.getElementById('provisionDisplay');
+
+    const resTotalInterest = document.getElementById('resTotalInterest');
+    const resTotalFees = document.getElementById('resTotalFees');
+    const resTotalCost = document.getElementById('resTotalCost');
+    const resNetReceived = document.getElementById('resNetReceived');
+
+    // Fungsi format rupiah
+    function formatRupiah(angka) {
+        return 'Rp' + angka.toLocaleString('id-ID');
+    }
+
+    // Fungsi perhitungan utama
+    function calculateLoan() {
+        const loan = parseFloat(loanInput.value);
+        const interestRate = parseFloat(interestInput.value) / 100;
+        const months = parseInt(monthsInput.value);
+        const admin = parseFloat(adminInput.value);
+        const provisionRate = parseFloat(provisionInput.value) / 100;
+
+        // Update teks slider
+        loanDisplay.innerText = formatRupiah(loan);
+        interestDisplay.innerText = interestInput.value + '%';
+        monthsDisplay.innerText = months + ' Bulan';
+        adminDisplay.innerText = formatRupiah(admin);
+        provisionDisplay.innerText = provisionInput.value + '%';
+
+        // Rumus Matematika Finansial
+        const totalInterest = loan * interestRate * months;
+        const provisionFee = loan * provisionRate;
+        const totalAdditionalFees = admin + provisionFee;
+        const totalCostOutsidePrincipal = totalInterest + totalAdditionalFees;
+        const netReceived = loan - totalAdditionalFees; // Provisi dan admin memotong di awal
+
+        // Tampilkan hasil secara real-time
+        resTotalInterest.innerText = formatRupiah(totalInterest);
+        resTotalFees.innerText = formatRupiah(totalAdditionalFees);
+        resTotalCost.innerText = formatRupiah(totalCostOutsidePrincipal);
+        resNetReceived.innerText = formatRupiah(netReceived);
+    }
+
+    // Pasang event listener ke semua slider
+    [loanInput, interestInput, monthsInput, adminInput, provisionInput].forEach(input => {
+        input.addEventListener('input', calculateLoan);
+    });
+
+    // Jalankan kalkulasi pertama kali saat halaman dimuat
+    calculateLoan();
+</script>
+
+</body>
+</html>
